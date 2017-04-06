@@ -1,0 +1,25 @@
+<% include header %>
+
+	<h2>방명록 목록</h2>
+	
+	<%
+		for (var i=0; i<guestBookList.length; i++){
+			var guestBook = guestBookList[i];
+	%>
+		<div class="col-sm-4">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<%=guestBook.title %>
+			</div>
+			<div class="panel-body">
+				<%=guestBook.content %>
+			</div>
+		</div>
+		</div>
+
+	<%
+		}
+	%>
+	
+
+<% include footer %>
