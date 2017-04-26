@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ko" ng-app="myApp">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+  	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script>
+  	<script type="text/javascript">
+  		var myApp = angular.module('myApp',[]);
+
+  		myApp.controller('bookCtrl', function($scope, $http){
+  				// $http를 이용해서 GET방식의 ajax요청 보내기
+  				$http.get('books/')
+  				.then(function(response){
+  					// response 객체는 서버가 보낸 데이터, 응답코드 등을 담고있는 객체다.
+  					// response status : http 응답코드,
+  					// response.data : 서버가 보낸 응답데이터
+
+  					$scope.bookList = response.data;
+  				},function(){
+
+  				});
+
+  				$scope.addNewBook = function(newBook){
+  					// newBook -> 책정보를 담고 있는 자바스크립트 객체
+  					// JSON.stringify(newBook) ->  자바스크립트 객체를 json 형식의 텍스트
+  					$http.post('books/', JSON.stringify(newBook))
+  					.then(function(response){
+  						$scope.bookList = response.data;
+  					}, function(response){
+  						alert("오류 발생");
+  					});
+  				}
+  		});
+
+  	</script>
+</head>
+<body>
+	<div class="container" ng-controller="bookCtrl">
+		<h1>도서 관리 프로그램</h1>
+		<table class="table">
+			<thead>
+				<tr>
+					<th>번호</th>
+					<th>제목</th>
+					<th>저자</th>
+					<th>가격</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="book in bookList">
+					<td>{{book.no}}</td>
+					<td>{{book.title}}</td>
+					<td>{{book.author}}</td>
+					<td>{{book.price}}</td>
+				</tr>
+			</tbody>
+		</table>
+		<div class="row well">
+				<form name="bookForm" novalidate ng-submit="addNewBook(book)">
+					<div class="form-group">
+						<label for="">번호</label>
+						<input type="number" class="form-control" ng-model="book.no" required>
+					</div>
+					<div class="form-group">
+						<label for="">제목</label>
+						<input type="text" class="form-control" ng-model="book.title" required>
+					</div>
+					<div class="form-group">
+						<label for="">저자</label>
+						<input type="text" class="form-control" ng-model="book.author" required>
+					</div>
+					<div class="form-group">
+						<label for="">가격</label>
+						<input type="number" class="form-control" ng-model="book.price" required>
+					</div>
+					<div class="form-group">
+						<button class="btn btn-default btn-sm" ng-disabled="bookForm.$invalid">등록</button>
+					</div>
+				</form>
+			</div>
+	</div>
+</body>
+</html>

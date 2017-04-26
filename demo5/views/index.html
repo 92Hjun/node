@@ -1,0 +1,100 @@
+<% include header.html %>
+	
+	<div class="row">
+		<h1>날씨 조회</h1>
+		<form class="form-horizontal well">
+			<div class="form-group">
+				<label class="control-label col-xs-2">주소</label>
+				<div class="col-xs-8">
+					<input type="text" name="address" class="form-control" required="required" />
+				</div>
+				<div class="col-xs-2">
+					<button type="submit" class="btn btn-default"> 조회 </button>
+				</div>
+			</div>
+		</form>
+	</div>
+	<div class="row">
+		<div class="panel panel-primary">
+			<div class="panel-body">
+				<canvas id="current-icon" width="32px" height="32px"></canvas>
+				<span id="current-addr"></span>
+				<span id="current-temp"></span>
+			</div>
+			<div class="panel-body">
+				<table class="table table-striped" id="daily-table">
+					<thead>
+						<tr>
+							<th>날짜</th>
+							<th>날씨</th>
+							<th>최저 기온</th>
+							<th>최고 기온</th>
+						</tr>
+					</thead>
+					<tbody>
+						
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript">
+		$(function(){
+
+			function getIconName(icon){
+				return icon.toUpperCase().replace(/-/g, '_');
+			}
+
+
+			$('form').on('submit', function(event){
+
+				event.preventDefault();
+
+				var addressValue = $.trim($(':input[name="address"]').val());
+				var request = $.ajax({
+					url:"/weather/" + addressValue,
+					dataType:'json'
+				});
+
+				// ajax 요청이 성공했을 때
+				request.done(function(data){
+					var skycons = new Skycons({color:'black'});
+
+					var currentlyIcon = data.currently.icon;
+					skycons.add($('#current-icon')[0], Skycons[getIconName(currentlyIcon)]);
+					$('#current-addr').text(data.address);
+					$('#current-temp').text(data.currently.temperature+ 'º');
+
+					var $tbody = $('#daily-table tbody').empty();
+
+					$.each(data.daily, function(index, item){
+
+						var $tr = $('<tr></tr>');
+
+						$tr.append('<td>'+item.date+'</td>');
+						$tr.append('<td><canvas id="daily-'+index+'" width="24px" height="24px"></canvas></td>');
+						$tr.append('<td>'+item.min+'</td>');
+						$tr.append('<td>'+item.max+'</td>');
+
+
+						$tbody.append($tr);
+
+						skycons.add($('#daily-'+index+'')[0], Skycons[getIconName(item.icon)]);
+
+
+					});
+
+					skycons.play();
+
+				});
+				// ajax 요청이 실패했을 때
+				request.fail(function(){
+					var $tbody = $('$daily-table tbody').empty();
+					$tbody.append('<tr><td colspan="4">오류가 발생하였습니다.</td></tr>')
+				});
+
+			});
+		});
+	</script>
+
+<% include footer.html %>

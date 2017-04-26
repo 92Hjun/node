@@ -1,0 +1,53 @@
+<% include header.html %>
+	
+	<div class="row">
+		<h1>
+			Todo List
+			<a href="create" class="btn btn-primary pull-right">Add Todo</a>
+		</h1>
+	</div>
+	<div class="panel panel-default panel-body">
+		<table class="table table-striped">
+			<colgroup>
+				<col width="5%">
+				<col width="10%">
+				<col width="*%">
+				<col width="12%">
+				<col width="10%">
+				<col width="18%">
+			</colgroup>
+			<thead>
+				<tr>
+					<th>No</th>
+					<th>Type</th>
+					<th>Title</th>
+					<th>Date</th>
+					<th>Completed</th>
+					<th> </th>
+				</tr>
+			</thead>
+			<tbody>
+			<% todos.forEach(function(item, index) { %>
+				
+				<tr>
+					<td><%=index+1 %></td>
+					<td><%=item.type %></td>
+					<td><a href="detail/<%=item._id %>"><%=item.title %></a></td>
+					<td><%=df(item.regdate, 'yyyy-mm-dd') %></td>
+					<td><%=item.completed %></td>
+					<td>
+					<% if (item.completed){%>
+							<a href="completed/<%=item._id %>" class="btn btn-primary btn-xs disabled">Completed</a>
+					<% } else {%>
+							<a href="completed/<%=item._id %>" class="btn btn-primary btn-xs">Completed</a>
+
+					<% }%>
+						<a href="delete/<%=item._id %>" class="btn btn-danger btn-xs">Delete</a>
+					</td>
+				</tr>
+			
+			<% });%>
+			</tbody>
+		</table>
+	</div>
+<% include footer.html %>
